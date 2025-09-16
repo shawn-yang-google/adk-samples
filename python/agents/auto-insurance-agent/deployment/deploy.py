@@ -56,29 +56,29 @@ def update_env_file(agent_engine_id, env_file_path):
 
 logger.info("deploying app...")
 
-app = AdkApp(
+adk_app = AdkApp(
     agent=root_agent,
     enable_tracing=True,
 )
-
+requirements=[
+    "google-cloud-aiplatform[adk,agent-engines]>=1.100.0,<2.0.0",
+    "google-adk>=1.5.0,<2.0.0",
+    "python-dotenv",
+    "google-cloud-secret-manager"
+]
 logging.debug("deploying agent to agent engine:")
 
-remote_app = agent_engines.create(
-    app,
-    display_name="auto_insurance_agent",
-    requirements=[
-        "google-cloud-aiplatform[adk,agent-engines]>=1.100.0,<2.0.0",
-        "google-adk>=1.5.0,<2.0.0",
-        "python-dotenv",
-        "google-cloud-secret-manager"
-    ],
-    extra_packages=[
-        "./auto_insurance_agent",
-    ],
-)
+# remote_app = agent_engines.create(
+#     adk_app,
+#     display_name="auto_insurance_agent",
+#     requirements=requirements,
+#     extra_packages=[
+#         "./auto_insurance_agent",
+#     ],
+# )
 
-# log remote_app
-logging.info(f"Deployed agent to Vertex AI Agent Engine successfully, resource name: {remote_app.resource_name}")
+# # log remote_app
+# logging.info(f"Deployed agent to Vertex AI Agent Engine successfully, resource name: {remote_app.resource_name}")
 
-# Update the .env file with the new Agent Engine ID
-update_env_file(remote_app.resource_name, ENV_FILE_PATH)
+# # Update the .env file with the new Agent Engine ID
+# update_env_file(remote_app.resource_name, ENV_FILE_PATH)
