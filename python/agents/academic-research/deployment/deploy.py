@@ -35,14 +35,20 @@ flags.DEFINE_bool("create", False, "Creates a new agent.")
 flags.DEFINE_bool("delete", False, "Deletes an existing agent.")
 flags.mark_bool_flags_as_mutual_exclusive(["create", "delete"])
 
-adk_app = AdkApp(agent=root_agent, enable_tracing=True)
-requirements = [
-    "google-adk (>=0.0.2)",
-    "google-cloud-aiplatform[agent_engines] (>=1.91.0,!=1.92.0)",
-    "google-genai (>=1.5.0,<2.0.0)",
-    "pydantic (>=2.10.6,<3.0.0)",
-    "absl-py (>=2.2.1,<3.0.0)",
-]
+def session_service_builder():
+  """Builds the session service to use in the ADK app."""
+
+  # This is needed to ensure InitGoogle and AdkApp setup is called first.
+  from google.adk.sessions.in_memory_session_service import InMemorySessionService
+
+  # if "GOOGLE_CLOUD_AGENT_ENGINE_ID" not in os.environ:
+  return InMemorySessionService()
+
+adk_app = AdkApp(
+    agent=root_agent,
+    enable_tracing=True,
+    session_service_builder=session_service_builder,
+)
 
 # def create() -> None:
 #     """Creates an agent engine for Academic Research."""
